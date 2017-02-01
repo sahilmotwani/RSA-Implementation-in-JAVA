@@ -7,18 +7,17 @@ import java.io.IOException;
 /**
  * @author sahil
  * 
- * 	Step 1: Select two large prime numbers p and q.
+ * 	Step 1: Generate two large prime numbers p and q.
 	Step 2: Calculate n = p*q
-	Step 3: Calculate Euler's totient function ø(n) = (p – 1)*(q – 1)
-	Step 4: Find e such that it is relatively prime with ø(n), i.e. gcd(e, ø(n)) = 1 ; 1 < e < ø(n)
-	Step 5: Calculate d such that e.d = 1 (mod ø(n)) i.e. multiplicative inverse of e.(mod ø(n))
+	Step 3: Calculate Euler's totient function Ã¸(n) = (p â€“ 1)*(q â€“ 1)
+	Step 4: Find e such that it is relatively prime with Ã¸(n) that is the gcd(e, Ã¸(n)) = 1
+	Step 5: Calculate d such that e.d = 1 (mod Ã¸(n)) that is multiplicative inverse of e.(mod Ã¸(n))
 
 	Public Key is (n, e) and Private Key is (d, n).
 
-	Encryption: Ciphertext = (Plaintext ^ e) mod n
-	Decryption: Plaintext  = (Ciphertext ^ d) mod n
+	Encryption - Cybertext = (PlainText ^ e) mod n
+	Decryption - PlainText = (CyberText ^ d) mod n
 
-	We will do all these operations using the BigInteger class in Java
  *
  */
 
@@ -38,30 +37,29 @@ public class RSA
 	private void generateKey(int choice)
 	{
 
-		// Step 1 . Randomly generate two BigInteger prime numbers p , q with bitlength 512 using the BigInteger class
-		// The below constructor will generate a prime number with certainty 15 
-		p = new BigInteger(bitLength, 15, new Random());
-		q = new BigInteger(bitLength, 15, new Random());
+		// Step 1 . Randomly generate two BigInteger prime numbers p , q with bitlength 32 using the BigInteger class
+		p=  BigInteger.probablePrime(bitLength, new Random());
+		q = BigInteger.probablePrime(bitLength, new Random());
 
 		/* Step 2: Calculate n = p.q */
 		n = p.multiply(q);
 		
 		printPrimes(p,q,n);
-		// Step 3. Calculate ø(n) = (p-1)*(q-1)
+		
+		// Step 3. Calculate Ã¸(n) = (p-1)*(q-1)
 		phiN = p.subtract(BigInteger.valueOf(1));
 		phiN = phiN.multiply( q.subtract( BigInteger.valueOf(1)));
 
-		//Step 4 . Find e such that gcd(e ,ø(n)) = 1 and e < ø(n)
-		//this while loop will run until gcd of e and ø(n) is not 1
+		//Step 4 . Find e such that gcd(e ,Ã¸(n)) = 1 and e < Ã¸(n)
+		//this while loop will run until gcd of e and Ã¸(n) is not 1
 
 		switch(choice){
 		case 1:
-		do
+		e = new BigInteger(2*bitLength, new Random());
+		while( (e.compareTo(phiN) != 1) || (e.gcd(phiN).compareTo(BigInteger.valueOf(1)) != 0))
 		{
 			e = new BigInteger(2*bitLength, new Random());
-
 		}
-		while( (e.compareTo(phiN) != 1) || (e.gcd(phiN).compareTo(BigInteger.valueOf(1)) != 0));
 		break;
 		case 2:
 			e= 	getPublicKey();
@@ -70,7 +68,7 @@ public class RSA
 			e= getPublicKey();
 			break;
 		}
-		/* Step 5: Calculate d such that e.d = 1 (mod ø(n)) */
+		/* Step 5: Calculate d such that e.d = 1 (mod Ã¸(n)) */
 		d = e.modInverse(phiN);
 
 	}
